@@ -26,8 +26,7 @@ pub fn save_to_file(file_name: &str, state: Map<String, Value>) -> () {
 
 #[cfg(test)]
 mod base_test {
-    use serde_json::Map;
-    use serde_json::value::Value;
+    use serde_json::{Map, json};
     use super::{read_file, save_to_file};
     use tempfile::tempdir;
 
@@ -37,7 +36,7 @@ mod base_test {
         let binding = dir.path().join("tempfile.json");
         let file_name = binding.to_str().unwrap();
         let mut state = Map::new();
-        state.insert(String::from("key"), Value::String(String::from("value")));
+        state.insert(String::from("key"), json!("value"));
         save_to_file(file_name, state);
         let result = read_file(file_name);
         println!("{:?}", result);

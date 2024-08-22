@@ -14,12 +14,20 @@ impl Done {
     }
 }
 
-impl Get for Done {}
+impl Get for Done {
+    fn get_title(&self) -> &str {
+        &self.super_struct.title
+    }
+}
 impl Edit for Done {}
 impl Delete for Done {}
 
 #[cfg(test)]
-mod pending_test {
+mod done_test {
+    use serde_json::{json, Map};
+
+    use crate::to_do::structs::traits::get::Get;
+
     use super::Done;
 
     #[test]
@@ -28,5 +36,13 @@ mod pending_test {
         let actual = Done::new(title);
         assert_eq!(title, actual.super_struct.title);
         assert_eq!("done", actual.super_struct.status);
+    }
+    #[test]
+    fn done_get() {
+        let title = "any_title_done";
+        let actual = Done::new(title);
+        let mut state = Map::new();
+        state.insert(title.to_string(), json!("data"));
+        actual.get(state);
     }
 }

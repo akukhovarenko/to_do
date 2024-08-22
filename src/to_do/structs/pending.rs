@@ -16,7 +16,11 @@ impl Pending {
 }
 
 impl Create for Pending {}
-impl Get for Pending {}
+impl Get for Pending {
+    fn get_title(&self) -> &str {
+        &self.super_struct.title
+    }
+}
 impl Edit for Pending {}
 impl Delete for Pending {}
 
