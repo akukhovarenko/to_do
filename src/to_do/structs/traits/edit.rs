@@ -8,14 +8,14 @@ pub trait Edit
 where
     Self: Item,
 {
-    fn set_status(&mut self, state: &mut Map<String, Value>, status: &str, state_file_name: &str) {
+    fn set_status(&self, state: &mut Map<String, Value>, status: &str, state_file_name: &str) {
         state.insert(self.get_title().to_string(), json!(status));
         save_state_to_file(state_file_name, state);
     }
-    fn set_done(&mut self, state: &mut Map<String, Value>, state_file_name: &str) {
+    fn set_to_done(&self, state: &mut Map<String, Value>, state_file_name: &str) {
         self.set_status(state, "done", state_file_name);
     }
-    fn set_pending(&mut self, state: &mut Map<String, Value>, state_file_name: &str) {
+    fn set_to_pending(&self, state: &mut Map<String, Value>, state_file_name: &str) {
         self.set_status(state, "pending", state_file_name);
     }
 }
@@ -58,10 +58,10 @@ mod edit_test {
         let state_file_name = buffer
             .to_str()
             .unwrap();
-        let mut actual = PendingTestStruct {};
+        let actual = PendingTestStruct {};
         let mut state: Map<String, Value> = Map::new();
         state.insert(actual.get_title().to_string(), json!(actual.get_status()));
-        actual.set_done(&mut state, state_file_name);
+        actual.set_to_done(&mut state, state_file_name);
         let actual_state = load_state_from_file(state_file_name);
         assert_eq!(
             actual_state.get(actual.get_title()),
@@ -79,10 +79,10 @@ mod edit_test {
         let state_file_name = buffer
             .to_str()
             .unwrap();
-        let mut actual = DoneTestStruct {};
+        let actual = DoneTestStruct {};
         let mut state: Map<String, Value> = Map::new();
         state.insert(actual.get_title().to_string(), json!(actual.get_status()));
-        actual.set_pending(&mut state, state_file_name);
+        actual.set_to_pending(&mut state, state_file_name);
         let actual_state = load_state_from_file(state_file_name);
         assert_eq!(
             actual_state.get(actual.get_title()),
