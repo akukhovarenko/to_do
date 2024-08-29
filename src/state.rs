@@ -6,8 +6,16 @@ use serde_json::json;
 use serde_json::value::Value;
 use serde_json::Map;
 
-pub fn read_file(file_name: &str) -> Map<String, Value> {
-    let mut file = File::open(file_name.to_string()).unwrap();
+
+pub fn load_state_from_file(file_name: &str) -> Map<String, Value> {
+    let file_descriptor = File::open(file_name.to_string());
+    let mut file = match file_descriptor {
+        Ok(data) => data,
+        Err(data) => {
+            println!("ERROR: load state from file {:?}", data);
+            return Map::new();
+        },
+    };
     let mut data = String::new();
 
     file.read_to_string(&mut data).unwrap();
@@ -18,7 +26,7 @@ pub fn read_file(file_name: &str) -> Map<String, Value> {
     return state;
 }
 
-pub fn save_to_file(file_name: &str, state: Map<String, Value>) -> () {
+pub fn save_state_to_file(file_name: &str, state: &Map<String, Value>) -> () {
     let data = json!(state);
     fs::write(file_name.to_string(), data.to_string()).expect("Unable to write data to file");
 }
@@ -27,18 +35,18 @@ pub fn save_to_file(file_name: &str, state: Map<String, Value>) -> () {
 #[cfg(test)]
 mod base_test {
     use serde_json::{Map, json};
-    use super::{read_file, save_to_file};
+    use super::{load_state_from_file, save_state_to_file};
     use tempfile::tempdir;
 
     #[test]
     fn read_write_to_file(){
-        let dir = tempdir().unwrap();
+        let dir: tempfile::TempDir = tempdir().unwrap();
         let binding = dir.path().join("tempfile.json");
         let file_name = binding.to_str().unwrap();
         let mut state = Map::new();
         state.insert(String::from("key"), json!("value"));
-        save_to_file(file_name, state);
-        let result = read_file(file_name);
+        save_state_to_file(file_name, &state);
+        let result = load_state_from_file(file_name);
         println!("{:?}", result);
         dir.close().unwrap();
     }
