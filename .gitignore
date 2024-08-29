@@ -5,3 +5,4 @@
 /target
 *.profdata
 *.profraw
+state.json
